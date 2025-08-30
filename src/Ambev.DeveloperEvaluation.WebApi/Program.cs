@@ -53,6 +53,23 @@ public class Program
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<DefaultContext>();
+
+                try
+                {
+                    context.Database.Migrate();
+                    Log.Information("Database migrations completed successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error executing database migrations");
+                    throw;
+                }
+            }
+
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
@@ -60,8 +77,10 @@ public class Program
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            app.UseHttpsRedirection();
+            else
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseAuthentication();
             app.UseAuthorization();
