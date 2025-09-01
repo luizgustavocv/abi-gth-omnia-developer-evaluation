@@ -10,7 +10,12 @@ public record DeleteSaleCommand : IRequest<DeleteSaleResponse>
     /// <summary>
     /// The unique identifier of the sale to delete
     /// </summary>
-    public Guid Id { get; }
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Initializes a new instance of DeleteSaleCommand
+    /// </summary>
+    public DeleteSaleCommand() { }
 
     /// <summary>
     /// Initializes a new instance of DeleteSaleCommand
