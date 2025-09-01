@@ -1,86 +1,115 @@
 # Developer Evaluation Project
 
-`READ CAREFULLY`
+The DeveloperStore.Sales API was built to handle sales records within the DeveloperStore ecosystem, applying Domain-Driven Design (DDD) practices.
 
-## Instructions
-**The test below will have up to 7 calendar days to be delivered from the date of receipt of this manual.**
+## Technologies
 
-- The code must be versioned in a public Github repository and a link must be sent for evaluation once completed
-- Upload this template to your repository and start working from it
-- Read the instructions carefully and make sure all requirements are being addressed
-- The repository must provide instructions on how to configure, execute and test the project
-- Documentation and overall organization will also be taken into consideration
+- .NET 8.0
+- C#
+- Docker
+- Docker Compose
+- PostgreSQL
 
-## Use Case
-**You are a developer on the DeveloperStore team. Now we need to implement the API prototypes.**
+## Requirements
 
-As we work with `DDD`, to reference entities from other domains, we use the `External Identities` pattern with denormalization of entity descriptions.
+Before running the application, make sure you have the following installed:
 
-Therefore, you will write an API (complete CRUD) that handles sales records. The API needs to be able to inform:
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
 
-* Sale number
-* Date when the sale was made
-* Customer
-* Total sale amount
-* Branch where the sale was made
-* Products
-* Quantities
-* Unit prices
-* Discounts
-* Total amount for each item
-* Cancelled/Not Cancelled
+## Running the Project
 
-It's not mandatory, but it would be a differential to build code for publishing events of:
-* SaleCreated
-* SaleModified
-* SaleCancelled
-* ItemCancelled
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/luizgustavocv/abi-gth-omnia-developer-evaluation
+   cd abi-gth-omnia-developer-evaluation
+   ```
 
-If you write the code, **it's not required** to actually publish to any Message Broker. You can log a message in the application log or however you find most convenient.
+2. Start the application with Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+3. Open the Swagger documentation in your browser:
+   ```bash
+   http://localhost:8080/swagger
+   ```
 
-### Business Rules
+## Testing
 
-* Purchases above 4 identical items have a 10% discount
-* Purchases between 10 and 20 identical items have a 20% discount
-* It's not possible to sell above 20 identical items
-* Purchases below 4 items cannot have a discount
+You can try out the available endpoints directly through Swagger.
 
-These business rules define quantity-based discounting tiers and limitations:
+## Sales Endpoints
 
-1. Discount Tiers:
-   - 4+ items: 10% discount
-   - 10-20 items: 20% discount
+For all endpoints, use Content-Type: application/json.
 
-2. Restrictions:
-   - Maximum limit: 20 items per product
-   - No discounts allowed for quantities below 4 items
+#### Create
+```http
+POST /api/Sales
 
-## Overview
-This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
+{
+  "customerId": "a73196b7-33a0-4d66-850f-64de6d9bf679",
+  "customerName": "John Doe",
+  "branchId": "9904ab36-121b-4844-96a3-f9df3e85ee8a",
+  "branchName": "Main",
+  "items": [
+    {
+      "productId": "05cb7ddb-e4f8-4095-a023-24e182f1ad34",
+      "productName": "Beer",
+      "unitPrice": 9.99,
+      "quantity": 10
+    },
+	{
+      "productId": "9528eade-18b3-4371-aaba-b66ae3ee87ab",
+      "productName": "Wine",
+      "unitPrice": 100,
+      "quantity": 1
+    }
+  ]
+}
+```
 
-See [Overview](/.doc/overview.md)
+#### Get
+```http
+GET /api/Sales/{id}
+```
 
-## Tech Stack
-This section lists the key technologies used in the project, including the backend, testing, frontend, and database components. 
+#### Update
+```http
+PUT /api/Sales/{id}
 
-See [Tech Stack](/.doc/tech-stack.md)
+{
+  "id": "d637eaa9-f1cc-4a90-b75e-a954e673671b",
+  "itemsToAdd": [
+    {
+      "productId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "productName": "Water",
+      "unitPrice": 5,
+      "quantity": 2
+    }
+  ],
+  "itemsToUpdate": [
+    {
+      "productId": "05cb7ddb-e4f8-4095-a023-24e182f1ad34",
+      "quantity": 20
+    }
+  ],
+  "productIdsToRemove": [
+    "9528eade-18b3-4371-aaba-b66ae3ee87ab"
+  ]
+}
+```
 
-## Frameworks
-This section outlines the frameworks and libraries that are leveraged in the project to enhance development productivity and maintainability. 
+#### Cancel
+```http
+POST /api/Sales/{id}/cancel
 
-See [Frameworks](/.doc/frameworks.md)
+{
+  "reason": "Customer changed mind"
+}
+```
 
-<!-- 
-## API Structure
-This section includes links to the detailed documentation for the different API resources:
-- [API General](./docs/general-api.md)
-- [Products API](/.doc/products-api.md)
-- [Carts API](/.doc/carts-api.md)
-- [Users API](/.doc/users-api.md)
-- [Auth API](/.doc/auth-api.md)
--->
-
-## Project Structure
-This section describes the overall structure and organization of the project files and directories. 
-
-See [Project Structure](/.doc/project-structure.md)
+#### Delete
+```http
+DELETE /api/Sales/{id}
+```
